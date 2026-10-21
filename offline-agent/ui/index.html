@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Agent & Knowledge Graph Studio</title>
+  <link rel="stylesheet" href="/styles.css?v=13">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div class="brand-title">Agent Studio</div>
+          <div class="brand-subtitle">Offline Knowledge Engine</div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-item active" data-tab="graph">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Knowledge Graph
+        </div>
+        <div class="nav-item" data-tab="code">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Code Studio
+        </div>
+        <div class="nav-item" data-tab="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Agent Dashboard
+        </div>
+        <div class="nav-item" data-tab="study">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Study Generator
+        </div>
+        <div class="nav-item" data-tab="tutor">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          AI Study Tutor
+        </div>
+      </nav>
+
+      <!-- Vault Info Widget -->
+      <div class="vault-widget">
+        <div class="vault-widget-title">
+          <span>Obsidian Vault</span>
+          <div class="vault-status-dot" title="Active"></div>
+        </div>
+        <div class="vault-path" id="sidebar-vault-path">Loading...</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1 class="view-heading" id="current-view-title">Knowledge Graph Studio</h1>
+          <div class="stats-pill-group">
+            <div class="stat-pill"><strong id="stat-nodes">0</strong> Nodes</div>
+            <div class="stat-pill"><strong id="stat-edges">0</strong> Edges</div>
+            <div class="stat-pill"><strong id="stat-workspaces">0</strong> Workspaces</div>
+            <div class="stat-pill"><strong id="stat-notes">0</strong> Notes</div>
+            <div class="stat-pill"><strong id="stat-tasks">0</strong> Tasks</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <!-- Dark / Light Mode Toggle Button -->
+          <button class="btn btn-secondary theme-toggle-btn" id="btn-theme-toggle" title="Toggle Dark / Light Mode">
+            <span class="theme-icon-container">
+              <svg class="theme-icon moon-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <svg class="theme-icon sun-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </span>
+            <span id="theme-label">Dark</span>
+          </button>
+          <button class="btn btn-secondary" id="btn-refresh-graph">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh
+          </button>
+          <button class="btn btn-primary" id="btn-quick-study">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Topic
+          </button>
+        </div>
+      </header>
+
+      <!-- Tab 1: Knowledge Graph Studio Dashboard -->
+      <section class="tab-panel active" id="tab-graph">
+        <!-- Top Graph Dashboard Bar -->
+        <div class="graph-dashboard-header">
+          <!-- Left: Search & Filter Pills -->
+          <div class="graph-nav-group">
+            <div class="search-input-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="graph-search" placeholder="Search concepts, files, tasks...">
+            </div>
+            <div class="filter-pills">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="workspace">Workspaces</button>
+              <button class="filter-btn" data-filter="education">Education</button>
+              <button class="filter-btn" data-filter="task">Tasks</button>
+              <button class="filter-btn" data-filter="code">Code</button>
+            </div>
+            <div id="active-topic-badge" class="active-topic-badge" style="display:none;">
+              <span class="topic-badge-icon">📚</span>
+              <span id="active-topic-badge-name" class="topic-badge-name">Data Structures</span>
+              <button class="active-topic-clear" id="btn-clear-topic-highlight" title="Clear topic filter and show all nodes">&times;</button>
+            </div>
+          </div>
+
+          <!-- Center: Live Telemetry & Simulation Status -->
+          <div class="graph-telemetry-hud">
+            <div class="sim-status-badge settled" id="graph-sim-badge" title="Simulation physics state">
+              <span class="sim-dot"></span>
+              <span id="sim-status-text">Settled</span>
+            </div>
+            <div class="graph-metric-pill" title="Network Density / Avg Connections per Concept">
+              <span class="metric-icon">⚡</span>
+              <span id="graph-metric-density">3.4</span> / Node
+            </div>
+          </div>
+
+          <!-- Right: Graph Engine & Layout Controls -->
+          <div class="graph-actions-group">
+            <div class="layout-select-wrapper">
+              <select id="select-graph-layout" class="layout-dropdown" title="Select Graph Layout Architecture">
+                <option value="force">Force Clustered (Organic)</option>
+                <option value="radial">Concentric Radial</option>
+                <option value="category">Category Orbits</option>
+              </select>
+            </div>
+
+            <button class="btn btn-secondary btn-sm" id="btn-toggle-sim" title="Freeze or resume physics simulation">
+              <span id="sim-toggle-icon">⏸</span>
+              <span id="sim-toggle-label">Freeze</span>
+            </button>
+
+            <button class="btn btn-secondary btn-sm" id="btn-reheat-sim" title="Gently reorganize and settle graph">
+              <span>↺</span> Settle
+            </button>
+
+            <button class="btn btn-secondary btn-sm" id="btn-fit-view" title="Auto-center & fit whole graph in viewport">
+              <span>⛶</span> Fit View
+            </button>
+
+            <button class="btn btn-secondary btn-sm" id="btn-toggle-physics-panel" title="Open physics & display settings">
+              <span>⚙</span> Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Secondary Bar: Top Hubs & Neighborhood Quick-Nav -->
+        <div class="graph-hubs-bar">
+          <div class="hubs-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Key Hubs:
+          </div>
+          <div class="hubs-chips-container" id="graph-hubs-chips">
+            <span class="hub-chip-loading">Calculating hubs...</span>
+          </div>
+        </div>
+
+        <!-- Floating Physics Settings Popover Panel -->
+        <div class="physics-settings-panel" id="physics-panel">
+          <div class="panel-header">
+            <h4>Graph Physics & Visuals</h4>
+            <button class="panel-close-btn" id="close-physics-panel">&times;</button>
+          </div>
+          <div class="panel-body">
+            <div class="setting-group">
+              <label>Repulsion Spacing: <span id="val-repulsion" class="setting-val">1400</span></label>
+              <input type="range" id="slider-repulsion" min="300" max="3000" step="100" value="1400">
+            </div>
+            <div class="setting-group">
+              <label>Link Length: <span id="val-spring" class="setting-val">80px</span></label>
+              <input type="range" id="slider-spring" min="30" max="180" step="5" value="80">
+            </div>
+            <div class="setting-group">
+              <label>Center Gravity: <span id="val-gravity" class="setting-val">Medium</span></label>
+              <input type="range" id="slider-gravity" min="1" max="10" step="1" value="5">
+            </div>
+            <div class="setting-group">
+              <label>Label Visibility:</label>
+              <select id="select-label-mode" class="layout-dropdown" style="width:100%;">
+                <option value="smart">Smart (Hubs & Hover)</option>
+                <option value="all">Show All Labels</option>
+                <option value="hover">Hover / Search Only</option>
+              </select>
+            </div>
+            <div class="setting-group">
+              <label>Node Sizing:</label>
+              <select id="select-size-mode" class="layout-dropdown" style="width:100%;">
+                <option value="degree">Scale by Connections (Degree)</option>
+                <option value="uniform">Uniform Size</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-reset-physics" style="width:100%; justify-content:center; margin-top:8px;">
+              Reset to Defaults
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Zoom Controls -->
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+          <button class="zoom-btn" id="zoom-fit-float" title="Fit Entire Graph">⛶</button>
+          <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+        </div>
+
+        <!-- Floating Category & Topic Sorter Legend Dock -->
+        <div class="graph-legend-dock" id="graph-legend-dock">
+          <div class="legend-header" id="legend-header">
+            <span class="legend-title">Categories & Palette</span>
+            <button class="legend-toggle-btn" id="legend-toggle-btn" title="Collapse or expand legend">−</button>
+          </div>
+          <div class="legend-body" id="graph-legend-body">
+            <!-- Dynamically populated with colored category/topic chips -->
+          </div>
+        </div>
+
+        <!-- Interactive HTML5 Canvas Graph -->
+        <canvas id="graph-canvas"></canvas>
+
+        <!-- Slide-over Note Detail Panel -->
+        <div class="slide-drawer" id="note-drawer">
+          <div class="drawer-header">
+            <div class="drawer-header-left">
+              <div class="drawer-title" id="drawer-note-name">Note Details</div>
+              <div class="drawer-meta-line" id="drawer-note-meta">
+                <span class="note-source-pill in-vault" id="note-source-pill">📁 In Vault</span>
+                <span class="note-path-text" id="note-path-text"></span>
+              </div>
+            </div>
+            <div class="drawer-header-actions">
+              <button class="btn btn-secondary btn-xs" id="btn-open-in-code-studio" style="display:none;" title="Open this file in Code Studio">💻 Code Studio</button>
+              <button class="btn btn-secondary btn-xs" id="btn-edit-note" title="Toggle Edit / Preview Mode">✏️ Edit</button>
+              <button class="btn btn-primary btn-xs" id="btn-save-note" title="Save note to Obsidian Vault">💾 Save to Vault</button>
+              <button class="close-btn" id="close-drawer">&times;</button>
+            </div>
+          </div>
+          <div class="drawer-body">
+            <div id="drawer-content" class="drawer-markdown-view">
+              <p>Click on any node in the graph to inspect its full Markdown definition, code, and relationships.</p>
+            </div>
+            <div id="drawer-editor-wrap" class="drawer-editor-container" style="display:none;">
+              <textarea id="drawer-editor-textarea" placeholder="Write or edit note in markdown..."></textarea>
+            </div>
+
+            <!-- Linked Nodes Section in Drawer -->
+            <div class="drawer-links-section" id="drawer-links-section">
+              <div class="drawer-links-header">
+                <span class="drawer-links-title">🔗 Linked Graph Concepts &amp; Code</span>
+                <button class="btn btn-secondary btn-xs" id="btn-drawer-add-link" title="Connect this node to an existing node in the graph">+ Link Node</button>
+              </div>
+              <div class="drawer-links-list" id="drawer-links-list">
+                <!-- Dynamically populated link chips with unlink button -->
+              </div>
+            </div>
+          </div>
+          <div class="drawer-footer" id="drawer-footer">
+            <button class="btn btn-secondary btn-sm" id="btn-synth-note" title="Synthesize in-depth educational guide with AI">
+              ✨ Synthesize In-Depth Topic Note with AI
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 4: Code Studio (Offline / Online Agent & Workspace Engineering) -->
+      <section class="tab-panel" id="tab-code">
+        <!-- Code Studio Top Control Bar -->
+        <div class="code-studio-toolbar">
+          <div class="code-toolbar-left">
+            <div class="workspace-picker-group">
+              <label for="code-workspace-select" class="toolbar-label">Workspace:</label>
+              <select id="code-workspace-select" class="code-select" title="Select active workspace project">
+                <option value="">Loading workspaces...</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" id="btn-create-workspace-modal" title="Create a new workspace project">
+                <span>+</span> New Project
+              </button>
+            </div>
+            <div class="code-meta-badges">
+              <span class="code-badge" id="badge-ws-files">0 files</span>
+              <span class="code-badge-pulse" id="badge-ws-status">Graph Synced</span>
+            </div>
+          </div>
+
+          <div class="code-toolbar-center">
+            <!-- Offline / Online Mode Selector -->
+            <div class="mode-toggle-group">
+              <button class="mode-btn active" id="btn-mode-offline" data-mode="offline" title="Run locally with zero internet (Ollama local LLM)">
+                <span class="mode-indicator offline"></span>
+                <span>Offline (Local)</span>
+              </button>
+              <button class="mode-btn" id="btn-mode-online" data-mode="online" title="Online cloud model execution">
+                <span class="mode-indicator online"></span>
+                <span>Online (Cloud)</span>
+              </button>
+            </div>
+            <select id="code-model-select" class="code-select code-model-dropdown" title="Active LLM model">
+              <option value="qwen2.5-coder:3b">qwen2.5-coder:3b (Fast)</option>
+              <option value="qwen2.5-coder:7b">qwen2.5-coder:7b (Deep)</option>
+              <option value="llama3.1:latest">llama3.1:latest</option>
+            </select>
+          </div>
+
+          <div class="code-toolbar-right">
+            <button class="btn btn-secondary btn-sm" id="btn-view-in-graph" title="Locate and focus this project in the Knowledge Graph">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              View in Graph
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-code-run-tests" title="Execute pytest unit tests offline">
+              <span>▶</span> Run Tests
+            </button>
+            <button class="btn btn-primary btn-sm" id="btn-code-save-file" title="Save current file and refresh graph AST (Ctrl+S)">
+              <span>💾</span> Save File
+            </button>
+          </div>
+        </div>
+
+        <!-- Code Studio Split Grid -->
+        <div class="code-studio-layout">
+          <!-- Left: Workspace File Tree & Graph Relationships -->
+          <div class="code-sidebar-panel">
+            <div class="panel-section-header">
+              <span>Project Files</span>
+              <button class="btn-icon-xs" id="btn-refresh-workspace-files" title="Refresh files">↻</button>
+            </div>
+            <div class="code-file-tree" id="code-file-tree">
+              <div class="file-tree-loading">Loading project files...</div>
+            </div>
+
+            <!-- Active File Graph Links Box -->
+            <div class="code-node-links-box">
+              <div class="node-links-header">
+                <span class="node-links-title">Graph Connections</span>
+                <button class="btn btn-secondary btn-xs" id="btn-link-active-file" title="Link this file to an existing concept node in graph">
+                  + Link
+                </button>
+              </div>
+              <div class="node-links-content" id="code-file-links-container">
+                <div class="no-links-hint">Select a file to view or add connections to knowledge nodes.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center: Source Code Editor -->
+          <div class="code-editor-panel">
+            <div class="code-editor-tabbar">
+              <div class="editor-tab active">
+                <span class="file-icon" id="editor-file-icon">📄</span>
+                <span id="editor-active-filename">Select a file...</span>
+                <span class="dirty-indicator" id="editor-dirty-indicator" style="display:none;">●</span>
+              </div>
+              <div class="editor-tab-meta">
+                <span id="editor-lang-pill" class="badge-lang">PYTHON</span>
+                <span id="editor-size-pill" class="badge-size">0 B</span>
+              </div>
+            </div>
+            <div class="code-editor-area">
+              <textarea id="code-editor-textarea" spellcheck="false" placeholder="Select a file from the project explorer to view, edit, or test..."></textarea>
+            </div>
+          </div>
+
+          <!-- Bottom: Split Console & Autonomous Coding Assistant -->
+          <div class="code-bottom-panel">
+            <div class="bottom-panel-nav">
+              <button class="bottom-tab-btn active" data-pane="terminal" id="tab-btn-terminal">
+                <span>💻</span> Execution Terminal
+              </button>
+              <button class="bottom-tab-btn" data-pane="agent" id="tab-btn-agent">
+                <span>🤖</span> Autonomous Coding Agent
+              </button>
+              <div class="bottom-panel-actions">
+                <button class="btn-icon-xs" id="btn-clear-terminal" title="Clear terminal">🗑️ Clear</button>
+              </div>
+            </div>
+
+            <!-- Terminal Pane -->
+            <div class="bottom-pane active" id="pane-terminal">
+              <div class="terminal-command-bar">
+                <span class="term-prompt">$</span>
+                <select id="code-term-cmd-preset" class="code-select-sm">
+                  <option value="pytest">Run Pytest Suite (pytest -v)</option>
+                  <option value="python">Run Active Python File (python &lt;file&gt;)</option>
+                  <option value="custom">Custom Command...</option>
+                </select>
+                <input type="text" id="code-term-custom-cmd" placeholder="e.g. pytest test_rate_limiter.py -k test_burst" style="display:none;">
+                <button class="btn btn-primary btn-xs" id="btn-execute-term-cmd">Run</button>
+                <div class="terminal-meta-tags">
+                  <span id="term-status-badge" class="term-status-idle">Idle</span>
+                  <span id="term-duration-badge" class="term-duration">0.00s</span>
+                </div>
+              </div>
+              <pre class="terminal-output" id="code-terminal-output"><span class="term-dim">Offline Execution Environment ready. Select a test or script and click Run.</span></pre>
+            </div>
+
+            <!-- Agent Pane -->
+            <div class="bottom-pane" id="pane-agent">
+              <div class="agent-prompt-wrapper">
+                <div class="agent-prompt-inputs">
+                  <textarea id="agent-code-prompt" rows="2" placeholder="Tell the agent what to build, modify, or test (e.g., 'Implement a sliding window rate limiter class with unit tests for edge cases')..."></textarea>
+                  <div class="agent-prompt-options">
+                    <input type="text" id="agent-target-file" placeholder="Target file (e.g. rate_limiter.py, optional)">
+                    <select id="agent-link-existing-select" class="code-select-sm" title="Optionally link generated code to existing concept">
+                      <option value="">Link to graph node (optional)...</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" id="btn-run-agent-code">
+                      <span>⚡</span> Generate Code
+                    </button>
+                  </div>
+                </div>
+                <div id="agent-gen-status" class="agent-gen-status" style="display:none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Study Generator -->
+      <section class="tab-panel" id="tab-study">
+        <div class="study-hero">
+          <div class="hero-tag">Curriculum Architecture Engine</div>
+          <h2 class="hero-title">What would you like to master next?</h2>
+          <p class="hero-subtitle">
+            Enter any technical topic. The offline agent will synthesize an atomic, interconnected curriculum, generate linked Markdown notes into your Obsidian vault, and wire up the interactive graph view.
+          </p>
+
+          <div class="study-input-card">
+            <form class="study-form" id="study-gen-form">
+              <input type="text" class="study-input" id="study-topic-input" placeholder="e.g. Operating Systems, Neural Networks, Git Internals..." required>
+              <button type="submit" class="btn btn-primary" id="btn-generate-curriculum">
+                <span>Generate Graph</span>
+              </button>
+            </form>
+            <div class="suggested-topics">
+              <span class="suggested-label">Quick suggestions:</span>
+              <span class="chip" data-topic="Operating Systems">Operating Systems</span>
+              <span class="chip" data-topic="Neural Networks and Backpropagation">Neural Networks</span>
+              <span class="chip" data-topic="System Design Fundamentals">System Design</span>
+              <span class="chip" data-topic="Distributed Consensus and Raft">Distributed Systems</span>
+              <span class="chip" data-topic="Compiler Design and ASTs">Compiler Design</span>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.15rem; margin-bottom: 14px;">Existing Topics in Your Vault</h3>
+          <div class="topics-grid" id="existing-topics-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: AI Study Tutor -->
+      <section class="tab-panel" id="tab-tutor">
+        <div class="chat-box" id="tutor-chat-box">
+          <div class="chat-msg bot">
+            <div class="chat-avatar">AI</div>
+            <div class="chat-bubble">
+              Hello! I am your offline AI tutor. I am connected directly to your personal Obsidian knowledge graph. Ask me any conceptual question, and I will explain it using your vault notes and graph connections!
+            </div>
+          </div>
+        </div>
+        <form class="chat-input-bar" id="tutor-form">
+          <input type="text" id="tutor-input" placeholder="Ask a question about your study graph (e.g. 'What is the difference between BFS and DFS?')..." required>
+          <button type="submit" class="btn btn-primary" id="btn-tutor-send">
+            Ask Tutor
+          </button>
+        </form>
+      </section>
+
+      <!-- Tab 2: Agent Fleet & Execution Dashboard -->
+      <section class="tab-panel" id="tab-dashboard">
+        <div class="dashboard-container">
+
+          <!-- Dashboard Header -->
+          <div class="dash-header">
+            <div>
+              <h2 class="dash-title">Agent Fleet Telemetry & Monitoring</h2>
+              <p class="dash-subtitle">Live health metrics, tool invocation telemetry, and execution traces for autonomous local agents.</p>
+            </div>
+            <div class="dash-header-actions">
+              <button class="btn btn-secondary" id="btn-refresh-dashboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Refresh Telemetry
+              </button>
+            </div>
+          </div>
+
+          <!-- Executive KPI Grid (6 metrics) -->
+          <div class="dash-kpi-grid">
+            <!-- 1. Total Executions -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Total Executions</div>
+                <div class="kpi-value" id="kpi-total-tasks">--</div>
+                <div class="kpi-sub" id="kpi-sub-tasks">Autonomous tasks logged</div>
+              </div>
+            </div>
+
+            <!-- 2. Success Rate -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box emerald">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Success Rate</div>
+                <div class="kpi-value" id="kpi-success-rate">--%</div>
+                <div class="kpi-sub" id="kpi-sub-rate">Tasks finished cleanly</div>
+              </div>
+            </div>
+
+            <!-- 3. Tool Invocations -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box cyan">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Tool Invocations</div>
+                <div class="kpi-value" id="kpi-total-steps">--</div>
+                <div class="kpi-sub" id="kpi-sub-steps">Actions across code & tests</div>
+              </div>
+            </div>
+
+            <!-- 4. Subtasks -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box amber">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Orchestrated Subtasks</div>
+                <div class="kpi-value" id="kpi-subtasks-count">--</div>
+                <div class="kpi-sub">Multi-agent delegation units</div>
+              </div>
+            </div>
+
+            <!-- 5. Distilled Knowledge -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Distilled Insights</div>
+                <div class="kpi-value" id="kpi-facts-count">--</div>
+                <div class="kpi-sub">Learned lessons & pitfalls</div>
+              </div>
+            </div>
+
+            <!-- 6. Avg Runtime -->
+            <div class="kpi-card">
+              <div class="kpi-icon-box rose">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">Avg Runtime</div>
+                <div class="kpi-value" id="kpi-avg-duration">--s</div>
+                <div class="kpi-sub">Per completed execution</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Row (Two Cards) -->
+          <div class="dash-analytics-row">
+            <!-- Tool Usage Breakdown Card -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  Tool Invocations & Frequency
+                </div>
+                <span class="card-pill" id="total-tools-label">Active fleet tools</span>
+              </div>
+              <div class="tool-bars-list" id="tool-usage-bars">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Fleet Health & Knowledge Distillation Card -->
+            <div class="dash-card">
+              <div class="dash-card-header">
+                <div class="dash-card-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Distilled Agent Knowledge & Pitfalls
+                </div>
+                <span class="card-pill">Persistent Memory</span>
+              </div>
+              <div class="recent-facts-list" id="recent-facts-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Tasks & Execution History -->
+          <div class="dash-card" style="margin-top: 24px;">
+            <div class="dash-card-header" style="flex-wrap: wrap; gap: 14px;">
+              <div class="dash-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Agent Execution Stream
+              </div>
+
+              <div class="dash-filter-group">
+                <!-- Search input -->
+                <div class="table-search-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="dash-task-search" placeholder="Search tasks by prompt or id...">
+                </div>
+                <div class="status-filter-pills">
+                  <button class="status-pill-btn active" data-status="all">All</button>
+                  <button class="status-pill-btn" data-status="finished">Finished</button>
+                  <button class="status-pill-btn" data-status="running">Running</button>
+                  <button class="status-pill-btn" data-status="failed">Failed</button>
+                  <button class="status-pill-btn" data-status="stuck">Stuck</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th style="width: 65px;">ID</th>
+                    <th>Task Specification</th>
+                    <th style="width: 105px;">Status</th>
+                    <th style="width: 130px;">Model</th>
+                    <th style="width: 75px;">Steps</th>
+                    <th style="width: 85px;">Runtime</th>
+                    <th style="width: 130px;">Logged At</th>
+                    <th style="width: 85px; text-align: center;">Trace</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-tasks-tbody">
+                  <tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 32px;">Loading agent execution stream...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Slide-out Agent Execution Trace Modal/Drawer -->
+        <div class="slide-drawer" id="trace-drawer">
+          <div class="drawer-header">
+            <div class="drawer-title" id="trace-task-title">Execution Trace</div>
+            <button class="close-btn" id="close-trace-drawer">&times;</button>
+          </div>
+          <div class="drawer-body" id="trace-drawer-content">
+            <p style="color: var(--text-dim);">Select a task from the table to inspect its full execution timeline.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Link Graph Node -->
+  <div class="modal-overlay" id="modal-link-node" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Connect Knowledge Graph Nodes</h3>
+        <button class="modal-close-btn" id="close-modal-link">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-subtitle">Create a typed semantic relationship between this code file or note and any other node in the knowledge graph.</p>
+
+        <div class="form-group">
+          <label>Source Node:</label>
+          <div class="node-identity-box" id="link-modal-src-display">
+            <span class="src-icon">📄</span>
+            <span id="link-modal-src-name">rate_limiter.py</span>
+            <span class="src-kind-badge" id="link-modal-src-kind">file</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="link-relation-select">Relationship Type:</label>
+          <select id="link-relation-select" class="code-select" style="width:100%;">
+            <option value="implements">implements (Code implements concept / spec)</option>
+            <option value="references">references (References or invokes concept)</option>
+            <option value="tests">tests (Unit tests or validates concept)</option>
+            <option value="studied_from">studied_from (Derived from educational notes)</option>
+            <option value="depends_on">depends_on (Architecture dependency)</option>
+            <option value="extends">extends (Extends or inherits architecture)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="link-target-search-input">Target Node in Knowledge Graph:</label>
+          <div class="search-input-box" style="width:100%;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="link-target-search-input" placeholder="Type concept, note, task, or file name..." autocomplete="off">
+          </div>
+          <div class="target-search-results" id="link-target-search-results">
+            <!-- Autocomplete list items -->
+          </div>
+          <div class="selected-target-display" id="selected-target-display" style="display:none;">
+            <span>Selected Target:</span>
+            <strong id="selected-target-name">Dynamic_Array</strong>
+            <button class="btn-icon-xs" id="btn-clear-target-selection">&times;</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-link">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-create-link" disabled>Create Connection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Create New Workspace Project -->
+  <div class="modal-overlay" id="modal-create-workspace" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Workspace Project</h3>
+        <button class="modal-close-btn" id="close-modal-create-ws">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-subtitle">Initialize an isolated workspace in <code>data/workspaces</code> with Python entry points, pytest suite, and automatic graph indexing.</p>
+
+        <div class="form-group">
+          <label for="create-ws-name">Project Name:</label>
+          <input type="text" id="create-ws-name" class="modal-input" placeholder="e.g. async_crawler, kv_store, lru_cache" required>
+        </div>
+
+        <div class="form-group">
+          <label for="create-ws-desc">Description / Objectives (optional):</label>
+          <textarea id="create-ws-desc" class="modal-textarea" rows="2" placeholder="Brief description of what this project implements..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-create-ws">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-create-ws">Create &amp; Index</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=13"></script>
+</body>
+</html>

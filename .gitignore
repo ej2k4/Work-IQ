@@ -1,0 +1,29 @@
+# Virtual Environments
+.venv/
+**/venv/
+**/.venv/
+env/
+**/env/
+
+# Python Cache & Bytecode
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Test & Coverage Artifacts
+**/.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary Archives & Logs
+*.zip
+*.tar.gz
+*.log
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini

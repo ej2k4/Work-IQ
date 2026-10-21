@@ -1,0 +1,12 @@
+# Runtime dependencies (Phase 0-1)
+requests
+pytest
+
+# Phase 2 additions:
+numpy          # brute-force cosine similarity for vector search
+
+# Phase 3 additions:
+networkx       # multi-hop graph traversal and hybrid retrieval
+
+# Phase 5 optional:
+# unsloth        # LoRA fine-tuning (heavy, GPU required)
